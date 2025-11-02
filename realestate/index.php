@@ -108,76 +108,108 @@ if(!$result){
             <div id="slider" class="sl-slider-wrapper">
 
         <div class="sl-slider">
-
-          <div class="sl-slide" data-orientation="horizontal" data-slice1-rotation="-25" data-slice2-rotation="-25" data-slice1-scale="2" data-slice2-scale="2">
-            <div class="sl-slide-inner">
-              <div class="bg-img bg-img-1"></div>
-              <h2><a href="#"> Developed by Yatin Kumar S & 2 Bed Rooms and 1 Dinning Room Aparment on Sale</a></h2>
-              <blockquote>
-              <p class="location"><span class="glyphicon glyphicon-map-marker"></span>Developed by Yatin Kumar S & Binalbagan, Negros Occidental</p>
-              <p>Developed by Yatin Kumar S &  Until he extends the circle of his compassion to all living things, man will not himself find peace.</p>
-              <cite>$ 20,000,000</cite>
-              </blockquote>
+        <?php
+        // Fetch exactly 5 available properties for the slider
+        $slider_query = "SELECT * FROM properties WHERE availablility = 1 ORDER BY RAND() LIMIT 5";
+        $slider_result = mysqli_query($con, $slider_query);
+        
+        // Get all available properties
+        $properties = [];
+        while($prop = mysqli_fetch_assoc($slider_result)) {
+            $properties[] = $prop;
+        }
+        
+        $total_properties = count($properties);
+        
+        // If no available properties, show a message
+        if ($total_properties === 0) {
+            $properties[] = [
+                'property_id' => '#',
+                'property_title' => 'No Properties Available',
+                'property_address' => 'Please check back later',
+                'property_details' => 'We currently have no available properties. Please check back soon for new listings.',
+                'price' => 0,
+                'property_img' => 'images/properties/default.jpg',
+                'bed_room' => 0,
+                'liv_room' => 0,
+                'parking' => 0
+            ];
+            $total_properties = 1;
+        }
+        
+        // Expanded slider animation configurations for more variety
+        $animations = [
+            ['horizontal', -25, -25, 2, 2],    // Slide in from right
+            ['vertical', 10, -15, 1.5, 1.5],   // Slide in from bottom
+            ['horizontal', 3, 3, 2, 1],        // Zoom in
+            ['vertical', -5, 25, 2, 1],        // Slide in from top
+            ['horizontal', -5, 10, 2, 1],      // Slide in from left
+            ['vertical', 15, -10, 1.8, 1.2],   // Slide in from bottom right
+            ['horizontal', -15, 15, 2.2, 1.5], // Diagonal slide
+            ['vertical', 5, -20, 1.7, 1.3]     // Slide in from bottom left
+        ];
+        
+        
+        $i = 0;
+        foreach($properties as $property) {
+            $animation = $animations[$i % count($animations)];
+            $i++;
+            
+            // Get the first image if property_img contains multiple images
+            $images = explode(',', $property['property_img']);
+            $main_image = !empty($images[0]) ? $images[0] : 'images/properties/default.jpg';
+            ?>
+            <div class="sl-slide" 
+                 data-orientation="<?php echo $animation[0]; ?>" 
+                 data-slice1-rotation="<?php echo $animation[1]; ?>" 
+                 data-slice2-rotation="<?php echo $animation[2]; ?>" 
+                 data-slice1-scale="<?php echo $animation[3]; ?>" 
+                 data-slice2-scale="<?php echo $animation[4]; ?>">
+                <div class="sl-slide-inner">
+                    <div class="bg-img" style="background-image: url('<?php echo $main_image; ?>');"></div>
+                    <h2><a href="property-detail.php?id=<?php echo $property['property_id']; ?>">
+                        <?php echo htmlspecialchars($property['property_title']); ?>
+                    </a></h2>
+                    <blockquote>
+                        <p class="location">
+                            <span class="glyphicon glyphicon-map-marker"></span> 
+                            <?php echo htmlspecialchars($property['property_address']); ?>
+                        </p>
+                        <p><?php echo substr(strip_tags($property['property_details']), 0, 150); ?>...</p>
+                        <cite>$ <?php echo number_format($property['price']); ?></cite>
+                    </blockquote>
+                </div>
             </div>
-          </div>
-
-          <div class="sl-slide" data-orientation="vertical" data-slice1-rotation="10" data-slice2-rotation="-15" data-slice1-scale="1.5" data-slice2-scale="1.5">
-            <div class="sl-slide-inner">
-              <div class="bg-img bg-img-2"></div>
-              <h2><a href="#"> Developed by Yatin Kumar S & 2 Bed Rooms and 1 Dinning Room Aparment on Sale</a></h2>
-              <blockquote>
-              <p class="location"><span class="glyphicon glyphicon-map-marker"></span> Himamaylan, Negros Occidental</p>
-              <p>Until he extends the circle of his compassion to all living things, man will not himself find peace.</p>
-              <cite>$ 20,000,000</cite>
-              </blockquote>
-            </div>
-          </div>
-
-          <div class="sl-slide" data-orientation="horizontal" data-slice1-rotation="3" data-slice2-rotation="3" data-slice1-scale="2" data-slice2-scale="1">
-            <div class="sl-slide-inner">
-              <div class="bg-img bg-img-3"></div>
-              <h2><a href="#">2 Bed Rooms and 1 Dinning Room Aparment on Sale</a></h2>
-              <blockquote>
-              <p class="location"><span class="glyphicon glyphicon-map-marker"></span> Kabankalan, Negros Occidental</p>
-              <p>Until he extends the circle of his compassion to all living things, man will not himself find peace.</p>
-              <cite>$ 20,000,000</cite>
-              </blockquote>
-            </div>
-          </div>
-
-          <div class="sl-slide" data-orientation="vertical" data-slice1-rotation="-5" data-slice2-rotation="25" data-slice1-scale="2" data-slice2-scale="1">
-            <div class="sl-slide-inner">
-              <div class="bg-img bg-img-4"></div>
-              <h2><a href="#">2 Bed Rooms and 1 Dinning Room Aparment on Sale</a></h2>
-              <blockquote>
-              <p class="location"><span class="glyphicon glyphicon-map-marker"></span>Bacolod, Negros Occidental</p>
-              <p>Until he extends the circle of his compassion to all living things, man will not himself find peace.</p>
-              <cite>$ 20,000,000</cite>
-              </blockquote>
-            </div>
-          </div>
-
-          <div class="sl-slide" data-orientation="horizontal" data-slice1-rotation="-5" data-slice2-rotation="10" data-slice1-scale="2" data-slice2-scale="1">
-            <div class="sl-slide-inner">
-              <div class="bg-img bg-img-5"></div>
-              <h2><a href="#">2 Bed Rooms and 1 Dinning Room Aparment on Sale</a></h2>
-              <blockquote>
-              <p class="location"><span class="glyphicon glyphicon-map-marker"></span> Hinigaran, Negros Occidental</p>
-              <p>Until he extends the circle of his compassion to all living things, man will not himself find peace.</p>
-              <cite>$ 20,000,000</cite>
-              </blockquote>
-            </div>
-          </div>
+            <?php
+        }
+        if ($i == 0) {
+            // Fallback in case no properties are found
+            echo '<div class="sl-slide">
+                    <div class="sl-slide-inner">
+                        <div class="bg-img bg-img-1"></div>
+                        <h2><a href="#">No Properties Available</a></h2>
+                        <blockquote>
+                            <p>Check back soon for new property listings.</p>
+                        </blockquote>
+                    </div>
+                </div>';
+        }
+        ?>
         </div><!-- /sl-slider -->
 
 
 
         <nav id="nav-dots" class="nav-dots">
-          <span class="nav-dot-current"></span>
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
+            <?php
+            // Generate navigation dots based on actual number of slides
+            $dots_to_show = min(8, $total_properties); // Show max 8 dots
+            if ($dots_to_show > 0) {
+                echo '<span class="nav-dot-current"></span>';
+                for ($i = 1; $i < $dots_to_show; $i++) {
+                    echo '<span></span>';
+                }
+            }
+            ?>
         </nav>
 
       </div><!-- /slider-wrapper -->
